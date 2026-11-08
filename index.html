@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!-- LITTLE REMINDERS. Single-file site. Only edit the "EDIT HERE" block in the script.
+     GitHub Pages: put this file at the repo root as index.html next to your assets/ folder,
+     then Settings > Pages > Deploy from a branch > main / (root). -->
+<html lang="en" class="locked">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Little Reminders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root{--bg:#f8c7d9;--card:#fce1eb;--ink:#3b2230;--accent:#8f2f57;
+--title:'Young Serif',Georgia,serif;--text:'Newsreader',Georgia,serif;--hand:'Caveat','Segoe Print',cursive}
+*{box-sizing:border-box;margin:0}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+html.locked,html.locked body{overflow:hidden;overscroll-behavior:none}
+html.locked main,html.locked #bgbtn{visibility:hidden}
+body{background:var(--bg);color:var(--ink);font:400 clamp(1.02rem,.9vw + .8rem,1.2rem)/1.65 var(--text)}
+button,input{font:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ---------- intro ---------- */
+#intro{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:2rem;background:var(--bg);text-align:center;cursor:pointer;touch-action:none;transition:opacity 1.1s ease}
+#intro.done{opacity:0;pointer-events:none}
+#msg{max-width:min(30ch,88vw);font-size:clamp(1.3rem,4.6vw,2rem);line-height:1.4;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+#msg.in{opacity:var(--o,1);transform:none}
+#msg.out{opacity:0;transform:translateY(-12px);transition-duration:.45s}
+
+/* ---------- slides ---------- */
+.slide{position:relative;min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:clamp(1.2rem,4vw,4rem) clamp(1rem,5vw,5rem);overflow:hidden}
+.inner{position:relative;z-index:1;width:min(1080px,100%)}
+.decor{position:absolute;inset:0;z-index:0;pointer-events:none}
+.decor img{position:absolute;height:auto;pointer-events:none;user-select:none;transform:rotate(var(--r));animation:bob 7s ease-in-out infinite alternate}
+@keyframes bob{from{transform:rotate(var(--r))}to{transform:translateY(-6px) rotate(calc(var(--r) + 3deg))}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease var(--d,0s),transform .9s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+.reveal.l{transform:translateX(-34px)}.reveal.r{transform:translateX(34px)}.reveal.s{transform:scale(.94)}
+.seen .reveal{opacity:1;transform:none}
+
+.row{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(1.2rem,4vw,3.5rem);align-items:center}
+.row.flip>:first-child{order:2}
+.txt{position:relative;background:var(--card);border:1.5px solid var(--ink);border-radius:16px;padding:clamp(1.2rem,3vw,2.3rem);box-shadow:6px 6px 0 rgba(59,34,48,.16)}
+.txt h2,.paragraph h2{font:400 clamp(1.6rem,3.2vw,2.4rem)/1.15 var(--title);margin-bottom:.7rem}
+.txt p+p{margin-top:.8em}
+.txt .artist{font-style:italic;margin-top:-.3rem}
+.note{display:inline-block;font:500 clamp(1.3rem,2.4vw,1.6rem)/1 var(--hand);color:var(--accent);rotate:-3deg;margin-bottom:.7rem}
+
+/* photo / video / cover frames */
+.pic{--ar:.8;position:relative;width:min(100%,calc(66svh*var(--ar)));justify-self:center;padding:.7rem .7rem 2.4rem;background:var(--bg);border-radius:6px;box-shadow:0 12px 30px rgba(59,34,48,.2);rotate:-1.3deg}
+.flip .pic{rotate:1.3deg}
+.pic::before{content:"";position:absolute;top:-12px;left:50%;width:84px;height:24px;margin-left:-42px;background:rgba(143,47,87,.28);rotate:-4deg}
+.pic img,.pic video{display:block;width:100%;aspect-ratio:var(--ar);object-fit:cover;background:var(--card)}
+.pic.vid{--ar:1.778;padding:.6rem;background:var(--ink)}
+.pic.vid video{object-fit:contain;background:#000}
+.pic.cover{--ar:1;padding:.5rem;background:var(--ink);border-radius:10px;rotate:2deg;box-shadow:12px 12px 0 var(--card)}
+.pic.vid::before,.pic.cover::before{display:none}
+.pic.miss img,.pic.miss video{display:none}
+.pic.miss::after{content:"add file: " attr(data-src);display:grid;place-items:center;aspect-ratio:var(--ar);padding:1rem;text-align:center;border:2px dashed var(--accent);color:var(--accent);background:var(--card);font:500 1.3rem var(--hand)}
+
+/* music player */
+.player{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;align-items:center;margin-top:1.3rem;padding-top:1rem;border-top:1.5px dashed rgba(59,34,48,.4)}
+.play{width:3.4rem;height:3.4rem;grid-row:span 2;border:0;border-radius:50%;background:var(--ink);color:var(--card);cursor:pointer;transition:transform .2s}
+.play:hover{transform:scale(1.07)}.play:disabled{opacity:.4;cursor:not-allowed}
+.player input{width:100%;height:1.8rem;accent-color:var(--accent);cursor:pointer}
+.times{display:flex;justify-content:space-between;font-size:.88rem;font-variant-numeric:tabular-nums}
+.err{grid-column:1/-1;font:500 1.25rem var(--hand);color:var(--accent)}
+
+/* paragraph variants */
+.paragraph .inner{max-width:760px}
+.paragraph.min .ptxt{font-size:clamp(1.35rem,3.4vw,2.3rem);line-height:1.35;font-style:italic}
+.paragraph.min .ptxt::before{content:"";display:block;width:64px;border-top:2px solid var(--ink);margin-bottom:1.5rem}
+.paragraph.min h2{font:500 clamp(1.6rem,3vw,2.1rem)/1 var(--hand);color:var(--accent);margin-bottom:1rem}
+.paragraph.card .ptxt{margin-left:auto;max-width:640px;padding:clamp(1.5rem,4vw,3rem);background:var(--card);border:1.5px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 rgba(59,34,48,.16);rotate:-1deg}
+.ptxt p+p{margin-top:.9em}
+.end h2{font:400 clamp(3rem,12vw,8rem)/1 var(--title);text-align:center}
+.end h2::after{content:"";display:block;width:60%;margin:1.2rem auto 0;border-top:2px solid var(--ink);rotate:-1.5deg}
+
+#bgbtn{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:20;min-height:44px;padding:.3rem 1.1rem;border:1.5px solid var(--ink);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer;font:500 1.3rem/1 var(--hand);box-shadow:3px 3px 0 rgba(59,34,48,.18)}
+#bgbtn[aria-pressed=false]{text-decoration:line-through;opacity:.75}
+
+@media(max-width:760px){
+ .row{grid-template-columns:1fr;gap:1.6rem}.row.flip>:first-child{order:0}
+ .pic{width:min(100%,calc(46svh*var(--ar)))}.pic.cover{width:min(80%,42svh)}
+ .paragraph.card .ptxt{margin:0}}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+ html{scroll-behavior:auto}.reveal{opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+<div id="intro" role="button" tabindex="0"><p id="msg" aria-live="polite"></p></div>
+<main id="slides"></main>
+<button id="bgbtn" type="button" aria-pressed="true">music</button>
+
+<script>
+/* =====================================================================
+   EDIT HERE. Everything you normally change lives in this block.
+   ===================================================================== */
+
+// The four intro messages, shown one at a time (tap / click / Enter / Space to advance).
+const INTRO = [
+  "(tap on each msg to proceed)",
+  "we dont really talk alot these days:(",
+  "ive told you before aswell ke how things remind me of you😭 well…",
+  "as time passes even more things will become reminders but these are a few, i hope you like this:)"
+];
+
+// Background music: change the path here. It starts after the first tap on message 1.
+const BG_MUSIC = "shingeki-GT-20130218-kyojin.mp3";
+const BG_VOLUME = 0.6;   // 0 to 1
+
+/* SLIDES: shown top to bottom in exactly this order. Add, remove or reorder freely.
+   Any field except `type` is optional. "The End" is added automatically after the last one.
+   photo     {type:"photo", title, caption, image, alt, note, side:"left"|"right"}
+   video     {type:"video", title, caption, video, poster, note, side}
+   music     {type:"music", title, artist, caption, cover, audio, note, side, autoplay:true}
+   paragraph {type:"paragraph", title, text, note, style:"min"|"card"}   (blank line = new paragraph)
+   `note` is a small handwritten annotation. Paths are relative to index.html. */
+const SLIDES = [
+  {type:"photo", title:"Photo title", caption:"Your caption goes here.", image:"assets/images/photo1.jpg", alt:"Describe the photo", note:"small note", side:"left"},
+  {type:"paragraph", title:"A little thought", text:"Your writing goes here.\n\nA blank line starts a new paragraph."},
+  {type:"music", title:"Song title", artist:"Artist name", caption:"Why this song.", cover:"assets/images/cover1.jpg", audio:"assets/audio/song1.mp3"},
+  {type:"photo", title:"Another photo", caption:"Another caption.", image:"assets/images/photo2.jpg", alt:"Describe the photo", side:"right"},
+  {type:"paragraph", title:"Another thought", text:"More writing goes here.", style:"card"}
+];
+
+/* DECORATIONS (small transparent PNGs). Positions are SAVED values, never randomised on load.
+   slide = index in SLIDES (0 = first; SLIDES.length = The End)   x,y = % of the slide   w = px width
+   rot = degrees   op = opacity 0-1   float = gentle bobbing true/false.
+   To get a new position that avoids all content: open the site, open the browser console and run
+       designDecor(0, "assets/decor/star.png", 56)
+   then paste the line it prints into DECOR below. Existing entries never move. */
+const DECOR_ON = true;   // false hides every decoration
+const DECOR = [
+  // {slide:0, src:"assets/decor/star.png", x:82, y:8, w:56, rot:-14, op:0.9, float:true},
+];
+
+/* ======================= ENGINE (no need to edit below) ======================= */
+const $ = s => document.querySelector(s), root = document.documentElement;
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const h = (t, a = {}, ...k) => { const e = document.createElement(t);
+  for (const n in a) n === "class" ? e.className = a[n] : e.setAttribute(n, a[n]);
+  e.append(...k.filter(Boolean)); return e; };
+const paras = t => String(t || "").split(/\n\s*\n/).filter(Boolean).map(p => h("p", {}, p));
+const hit = (a, b, m = 0) => a.left < b.right + m && a.right > b.left - m && a.top < b.bottom + m && a.bottom > b.top - m;
+
+/* ---- audio: only one source at a time ---- */
+const bg = new Audio(BG_MUSIC), media = new Set(), holds = new Set();
+let bgOn = true, started = false, fadeT;
+bg.loop = true; bg.volume = 0;
+bg.onerror = () => { $("#bgbtn").hidden = true; };
+function fade(to, ms = 800) {
+  clearInterval(fadeT); const from = bg.volume, t0 = performance.now();
+  if (to > 0) bg.play().catch(() => {});
+  fadeT = setInterval(() => {
+    const k = Math.min(1, (performance.now() - t0) / ms);
+    bg.volume = from + (to - from) * k;
+    if (k >= 1) { clearInterval(fadeT); if (!to) bg.pause(); }
+  }, 40);
+}
+const syncBg = () => { if (started) fade(bgOn && !holds.size ? BG_VOLUME : 0); };
+const hold = (k, on) => { on ? holds.add(k) : holds.delete(k); syncBg(); };   // a hold silences the background music
+const stopOthers = x => media.forEach(m => m !== x && m.pause());
+$("#bgbtn").onclick = e => { bgOn = !bgOn; e.currentTarget.setAttribute("aria-pressed", bgOn); syncBg(); };
+
+/* ---- slide renderers: one per type ---- */
+const row = (a, b, L) => h("div", {class: "inner row" + (L ? "" : " flip")}, a, b);
+const box = (s, L, ...more) => h("div", {class: "txt protect reveal " + (L ? "r" : "l"), style: "--d:.15s"},
+  s.note && h("span", {class: "note"}, s.note), s.title && h("h2", {}, s.title), ...more);
+const fmt = t => isFinite(t) ? Math.floor(t / 60) + ":" + String(Math.floor(t % 60)).padStart(2, "0") : "0:00";
+let pc = 0;
+
+const R = {
+  photo(s) {
+    const L = s.side !== "right", im = h("img", {alt: s.alt || s.title || "", loading: "lazy", decoding: "async"}),
+      fig = h("figure", {class: "pic protect reveal " + (L ? "l" : "r"), "data-src": s.image || "set image path"}, im);
+    im.onerror = () => fig.classList.add("miss");
+    im.onload = () => { fig.style.setProperty("--ar", im.naturalWidth / im.naturalHeight); guard(); };
+    s.image ? im.src = s.image : fig.classList.add("miss");
+    return row(fig, box(s, L, ...paras(s.caption)), L);
+  },
+  video(s, sec, i) {
+    const L = s.side !== "right", v = h("video", {controls: "", playsinline: "", preload: "metadata"}),
+      fig = h("figure", {class: "pic vid protect reveal " + (L ? "l" : "r"), "data-src": s.video || "set video path"}, v);
+    media.add(v);
+    if (s.poster) v.poster = s.poster;
+    v.onerror = () => fig.classList.add("miss");
+    v.onloadedmetadata = () => { if (v.videoWidth) { fig.style.setProperty("--ar", v.videoWidth / v.videoHeight); guard(); } };
+    v.onplay = () => { stopOthers(v); hold("v" + i, 1); };
+    v.onpause = () => hold("v" + i, 0);
+    sec._leave = () => v.pause();
+    s.video ? v.src = s.video : fig.classList.add("miss");
+    return row(fig, box(s, L, ...paras(s.caption)), L);
+  },
+  music(s, sec, i) {
+    const L = s.side !== "right", a = new Audio(), title = s.title || "song";
+    a.preload = "metadata"; media.add(a);
+    const im = h("img", {alt: "Cover art for " + title, loading: "lazy", decoding: "async"}),
+      cover = h("figure", {class: "pic cover protect reveal " + (L ? "l" : "r"), "data-src": s.cover || "set cover path"}, im),
+      btn = h("button", {class: "play", type: "button", "aria-label": "Play " + title}, "▶"),
+      bar = h("input", {type: "range", min: 0, max: 1000, value: 0, "aria-label": "Seek"}),
+      cur = h("span", {}, "0:00"), dur = h("span", {}, "0:00"), err = h("p", {class: "err", hidden: ""}),
+      player = h("div", {class: "player"}, btn, bar, h("div", {class: "times"}, cur, dur), err);
+    let drag = false;
+    const fail = () => { btn.disabled = bar.disabled = true; err.hidden = false; err.textContent = "add file: " + (s.audio || "set audio path"); };
+    const go = () => a.play().catch(e => e.name !== "AbortError" && fail());
+    im.onerror = () => cover.classList.add("miss");
+    s.cover ? im.src = s.cover : cover.classList.add("miss");
+    a.onerror = fail;
+    a.onloadedmetadata = () => { dur.textContent = fmt(a.duration); };
+    a.ontimeupdate = () => { cur.textContent = fmt(a.currentTime); if (!drag && a.duration) bar.value = a.currentTime / a.duration * 1000; };
+    a.onplay = () => { stopOthers(a); hold("m" + i, 1); btn.textContent = "❚❚"; btn.setAttribute("aria-label", "Pause " + title); };
+    a.onpause = () => { btn.textContent = "▶"; btn.setAttribute("aria-label", "Play " + title); };
+    a.onended = () => { a.currentTime = 0; };
+    btn.onclick = () => a.paused ? go() : a.pause();
+    bar.onpointerdown = () => { drag = true; };
+    bar.onpointerup = bar.onpointercancel = () => { drag = false; };
+    bar.oninput = () => { if (a.duration) a.currentTime = bar.value / 1000 * a.duration; };
+    sec._enter = () => { hold("m" + i, 1); if (s.autoplay) go(); };          // arriving: pause background music
+    sec._leave = () => { a.pause(); a.currentTime = 0; hold("m" + i, 0); };  // leaving: stop song, resume background
+    s.audio ? a.src = s.audio : fail();
+    return row(cover, box(s, L, s.artist && h("p", {class: "artist"}, s.artist), ...paras(s.caption), player), L);
+  },
+  paragraph(s, sec) {
+    const v = s.style || (pc++ % 2 ? "card" : "min");   // alternates automatically unless you set style
+    sec.classList.add(v);
+    return h("div", {class: "inner"}, h("div", {class: "ptxt protect reveal " + (v === "card" ? "s" : "")},
+      s.note && h("span", {class: "note"}, s.note), s.title && h("h2", {}, s.title), ...paras(s.text)));
+  },
+  end(s) { return h("div", {class: "inner"}, h("h2", {class: "protect reveal s"}, s.text || "The End")); }
+};
+
+/* ---- build the page from SLIDES ---- */
+const slides = [];
+[...SLIDES, {type: "end"}].forEach((s, i) => {
+  const f = R[s.type];
+  if (!f) return console.warn("Unknown slide type:", s.type);
+  const sec = h("section", {class: "slide " + s.type, "data-i": i});
+  sec.append(h("div", {class: "decor", "aria-hidden": "true"}), f(s, sec, i));
+  $("#slides").append(sec); slides.push(sec);
+});
+
+/* ---- decorations: fixed saved positions, click-through, hidden if they would touch content ---- */
+if (DECOR_ON) DECOR.forEach(d => {
+  const layer = $(`.slide[data-i="${d.slide}"] .decor`); if (!layer) return;
+  const im = h("img", {alt: "", loading: "lazy", decoding: "async", style:
+    `left:${d.x}%;top:${d.y}%;width:${d.w || 48}px;opacity:${d.op ?? 1};--r:${d.rot || 0}deg;` + (d.float === false ? "animation:none" : "")});
+  im.onerror = () => im.remove(); im.onload = guard; im.src = d.src; layer.append(im);
+});
+function guard() {   // never moves a decoration; hides it if it would touch content at this screen size
+  slides.forEach(sec => {
+    const keep = [...sec.querySelectorAll(".protect")].map(e => e.getBoundingClientRect());
+    sec.querySelectorAll(".decor img").forEach(im => {
+      const r = im.getBoundingClientRect();
+      im.style.visibility = keep.some(k => hit(r, k, 28)) ? "hidden" : "visible";
+    });
+  });
+}
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(guard, 150); });
+addEventListener("load", guard); if (document.fonts) document.fonts.ready.then(guard);
+
+/* DESIGN HELPER (console): designDecor(slideIndex, "path.png", width). Picks random spots, rejects any
+   that touch content (+24px margin), prints a ready-to-paste DECOR line. Assumes a roughly square image. */
+window.designDecor = (slide, src, w = 48, tries = 400) => {
+  const sec = $(`.slide[data-i="${slide}"]`); if (!sec) return console.log("No such slide");
+  const r = sec.getBoundingClientRect(), keep = [...sec.querySelectorAll(".protect")].map(e => e.getBoundingClientRect());
+  for (let n = 0; n < tries; n++) {
+    const x = Math.random() * (r.width - w), y = Math.random() * (r.height - w);
+    const b = {left: r.left + x, top: r.top + y, right: r.left + x + w, bottom: r.top + y + w};
+    if (!keep.some(k => hit(b, k, 24))) {
+      const o = {slide, src, x: +(x / r.width * 100).toFixed(1), y: +(y / r.height * 100).toFixed(1), w, rot: Math.round(Math.random() * 40 - 20), op: 0.9, float: true};
+      return console.log(JSON.stringify(o) + ","), o;
+    }
+  }
+  console.log("No free space on that slide, so nothing was generated.");
+};
+
+/* ---- scroll-driven behaviour (started once the intro ends) ---- */
+const seen = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add("seen")),
+  {rootMargin: "0px 0px -12% 0px", threshold: 0.12});
+const act = new IntersectionObserver(es => es.forEach(e => { const f = e.isIntersecting ? e.target._enter : e.target._leave; f && f(); }),
+  {rootMargin: "-48% 0px -48% 0px"});
+
+/* ---- intro ---- */
+const intro = $("#intro"), msg = $("#msg"); let n = 0, busy = false;
+function show() {
+  msg.className = ""; msg.textContent = INTRO[n]; msg.style.setProperty("--o", n === 0 ? 0.75 : 1);
+  void msg.offsetWidth; msg.classList.add("in");
+}
+function next() {
+  if (busy || !msg.textContent) return; busy = true;
+  if (!started) { started = true; syncBg(); }   // music begins at the first interaction, never before
+  msg.className = "out";
+  setTimeout(() => { busy = false; ++n < INTRO.length ? show() : finish(); }, reduced ? 0 : 480);
+}
+const key = e => { if (["Enter", " ", "ArrowRight", "ArrowDown"].includes(e.key)) { e.preventDefault(); next(); } };
+function finish() {
+  document.removeEventListener("keydown", key); intro.removeEventListener("click", next);
+  root.classList.remove("locked"); scrollTo(0, 0);
+  intro.classList.add("done");
+  slides.forEach(s => { seen.observe(s); act.observe(s); }); guard();
+  setTimeout(() => intro.remove(), 1300);
+}
+intro.addEventListener("click", next); document.addEventListener("keydown", key);
+Promise.race([document.fonts ? document.fonts.ready : 0, new Promise(r => setTimeout(r, 1200))]).then(show);
+</script>
+</body>
+</html>
