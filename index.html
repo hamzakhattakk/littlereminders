@@ -15,7 +15,7 @@
 :root{--bg:#f8c7d9;--card:#fce1eb;--ink:#3b2230;--accent:#8f2f57;
 --title:'Young Serif',Georgia,serif;--text:'Newsreader',Georgia,serif;--hand:'Caveat','Segoe Print',cursive}
 *{box-sizing:border-box;margin:0}
-html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
 html.locked,html.locked body{overflow:hidden;overscroll-behavior:none}
 html.locked main,html.locked #bgbtn{visibility:hidden}
 body{background:var(--bg);color:var(--ink);font:400 clamp(1.02rem,.9vw + .8rem,1.2rem)/1.65 var(--text)}
@@ -30,7 +30,7 @@ button,input{font:inherit}
 #msg.out{opacity:0;transform:translateY(-12px);transition-duration:.45s}
 
 /* ---------- slides ---------- */
-.slide{position:relative;min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:clamp(1.2rem,4vw,4rem) clamp(1rem,5vw,5rem);overflow:hidden}
+.slide{position:relative;min-height:100vh;min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:clamp(1.2rem,4vw,4rem) clamp(1rem,5vw,5rem);overflow:hidden}
 .inner{position:relative;z-index:1;width:min(1080px,100%)}
 .decor{position:absolute;inset:0;z-index:0;pointer-events:none}
 .decor img{position:absolute;height:auto;pointer-events:none;user-select:none;transform:rotate(var(--r));animation:bob 7s ease-in-out infinite alternate}
@@ -75,7 +75,6 @@ button,input{font:inherit}
 .paragraph.card .ptxt{margin-left:auto;max-width:640px;padding:clamp(1.5rem,4vw,3rem);background:var(--card);border:1.5px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 rgba(59,34,48,.16);rotate:-1deg}
 .ptxt p+p{margin-top:.9em}
 .end h2{font:400 clamp(3rem,12vw,8rem)/1 var(--title);text-align:center}
-.end h2::after{content:"";display:block;width:60%;margin:1.2rem auto 0;border-top:2px solid var(--ink);rotate:-1.5deg}
 
 #bgbtn{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:20;min-height:44px;padding:.3rem 1.1rem;border:1.5px solid var(--ink);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer;font:500 1.3rem/1 var(--hand);box-shadow:3px 3px 0 rgba(59,34,48,.18)}
 #bgbtn[aria-pressed=false]{text-decoration:line-through;opacity:.75}
