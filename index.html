@@ -112,7 +112,7 @@ const BG_MUSIC = "shingeki-GT-20130218-kyojin.mp3.mpeg";
 const BG_VOLUME = 0.6;   // 0 to 1
 
 /* SLIDES: shown top to bottom in exactly this order. Add, remove or reorder freely.
-   Any field except `type` is optional. "The End" is added automatically after the last one.
+   Any field except `type` is optional. "" is added automatically after the last one.
    photo     {type:"photo", title, caption, image, alt, note, side:"left"|"right"}
    video     {type:"video", title, caption, video, poster, note, side}
    music     {type:"music", title, artist, caption, cover, audio, note, side, autoplay:true}
@@ -234,7 +234,7 @@ const R = {
     return h("div", {class: "inner"}, h("div", {class: "ptxt protect reveal " + (v === "card" ? "s" : "")},
       s.note && h("span", {class: "note"}, s.note), s.title && h("h2", {}, s.title), ...paras(s.text)));
   },
-  end(s) { return h("div", {class: "inner"}, h("h2", {class: "protect reveal s"}, s.text || "The End")); }
+  end(s) { return h("div", {class: "inner"}, h("h2", {class: "protect reveal s"}, s.text || ":)")); }
 };
 
 /* ---- build the page from SLIDES ---- */
