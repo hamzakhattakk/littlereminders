@@ -27,7 +27,7 @@ button,input{font:inherit}
 #intro.done{opacity:0;pointer-events:none}
 #msg{max-width:min(30ch,88vw);font-size:clamp(1.3rem,4.6vw,2rem);line-height:1.4;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
 #msg.in{opacity:var(--o,1);transform:none}
-#msg.out{opacity:0;transform:translateY(-12px);transition-duration:.45s}
+#msg.out{opacity:0;transform:none;transition-duration:.45s}
 
 /* ---------- slides ---------- */
 .slide{position:relative;min-height:100vh;min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:clamp(1.2rem,4vw,4rem) clamp(1rem,5vw,5rem);overflow:hidden}
@@ -121,9 +121,9 @@ const SLIDES = [
   {type:"photo", title:"Cherry Blossoms", caption:"the emoji i copied from you aside, the pink petals even flowers in general genuinely js give off your vibes", image:"cherryblossom.jpg", alt:"flowersss", note:"small note", side:"left"},
   {type:"paragraph", title:"reminder!!", text:"you arent alone \n\nand i cant stress it enough that how much i never want to feel like you dont have anyone to turn to when life isnt treating you well "},
   {type:"music", title:"Prism", artist:"Sonia Gadhia", caption:"", cover:"prism(cover).jpg", audio:"prism.mp3"},
-  {type:"photo", title:"Jhumkas", caption:"I have a memory ke around feb 2025 when we followed eachother you posted a story about really liking jhumkas and this aside they match your aesthetic aswell😭", image:"assets/images/photo2.jpg", alt:"", side:"right"},
+  {type:"photo", title:"Jhumkas", caption:"I have a memory ke around feb 2025 when we followed eachother you posted a story about really liking jhumkas and this aside they match your aesthetic aswell😭", image:"jhumkas.jpg", alt:"", side:"right"},
   {type:"photo", title:"Purple", caption:"You told me it’s your fav colorrr isliye🙏🏻", image:"purpleaesthetic (1).jpg", alt:"", side:"left"},
-  {type:"paragraph", title:"Another thought", text:"More writing goes here.", style:"card"},
+  {type:"paragraph", title:"another notee", text:"there are so many more things aswell but idhar nahi include kiye ya likhe shayd mujhe yad bhi nahi yad rn but i know ke theres alot more, even when i see some act of kindness mujhe apki yad ati hai😭", style:"card"},
   {type:"music", title:"Red Swan", artist:"Yoshiki feat. HYDE", caption:"i edited this song here cuz the full song was 4 mins+ ", cover:"redswan(cover).jpg", audio:"redswan(edited version).mp3"},
   {type:"photo", title:"Catss", caption:"i dont know what to type here😭 but yeah i think cats remind me of you cuz you really like them aswell", image:"cutecattongueout.jpg", alt:"", side:"left"},
   {type:"photo", title:"Rolled Eyes", caption:"No explanation needed✌🏻 but you used to spam this so much it became apki cheez😭", image:"rolledeyes (1).jpg", alt:"", side:"right"},
